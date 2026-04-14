@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora con Easter Egg</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #569cd6;
+            text-align: center;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1.2rem;
+            width: 80px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #569cd6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        /* CAPA DEL MEME */
+        #meme-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        /* LA IMAGEN QUE GIRA */
+        .img-giratoria {
+            width: 300px;
+            /* Aplicamos la animación de rotación */
+            animation: girar 2s linear infinite;
+        }
+
+        /* Definición de la animación de giro */
+        @keyframes girar {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        h2 { font-size: 2rem; color: red; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>¡Selecciona una opción!</h2>
+        <div style="margin-bottom: 15px;">
+            <input type="radio" name="sexo" id="m"> Hombre
+            <input type="radio" name="sexo" id="f"> Mujer
+        </div>
+        <p>Ingresa tu peso (kg):</p>
+        <input type="number" id="peso">
+        <br>
+        <button id="btnCalcular">CALCULAR</button>
+    </div>
+
+    <div id="meme-screen" onclick="parar()">
+        <img src="https://images-na.ssl-images-amazon.com/images/I/61M-zscxFgL.jpg" class="img-giratoria">
+        <h1 style="color: white;">¡TE ENCONTRÉ!</h1>
+    </div>
+
+    <audio id="miAudio" preload="auto">
+        <source src="oye-gela-escuchate-esto-saturado.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const btn = document.getElementById('btnCalcular');
+        const pantalla = document.getElementById('meme-screen');
+        const musica = document.getElementById('miAudio');
+
+        // FORMA ALTERNATIVA PARA EL AUDIO:
+        // 'Cargamos' el audio apenas el usuario mueve el mouse o toca la pantalla
+        // Esto le da permiso al navegador antes de que el meme salte.
+        window.addEventListener('click', () => {
+            musica.load(); 
+            console.log("Audio desbloqueado por interacción");
+        }, { once: true }); // Solo se ejecuta la primera vez que haces clic
+
+        btn.onclick = function() {
+            const peso = document.getElementById('peso').value;
+            const esMujer = document.getElementById('f').checked;
+
+            if (esMujer && peso >= 100) {
+                pantalla.style.display = 'flex';
+                
+                // Forzamos el play
+                musica.currentTime = 0;
+                let playPromise = musica.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("El navegador bloqueó el audio automático.");
+                        alert("Por favor, haz un clic en cualquier parte de la pantalla primero.");
+                    });
+                }
+            } else {
+                alert("Datos normales.");
+            }
+        };
+
+        function parar() {
+            pantalla.style.display = 'none';
+            musica.pause();
+        }
+    </script>
+</body>
+</html>
